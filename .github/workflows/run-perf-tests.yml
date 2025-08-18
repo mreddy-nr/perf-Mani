@@ -14,7 +14,7 @@ on:
 
 jobs:
   gatling-test:
-    runs-on: linux-qa
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
