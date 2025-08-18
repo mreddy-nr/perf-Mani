@@ -34,3 +34,10 @@ jobs:
       - name: Run Gatling simulation with Maven
         run: |
           mvn gatling:test -Dgatling.simulationClass=Simulations.BasicSimulation -DUSERS=${{ github.event.inputs.USERS }} -DDURATION=${{ github.event.inputs.DURATION }}
+      - name: Attach links to reports
+        working-directory: ./gatling-maven-plugin-demo-main/reports
+        run: |
+          {
+            echo "### Reports"
+            find * -name 'index.html' | awk '{print "https://github.com/mreddy-nr/perf-Mani//${{ inputs.jobTag }}/" $0}'                    
+          } >> $GITHUB_STEP_SUMMARY    
