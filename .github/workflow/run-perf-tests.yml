@@ -1,0 +1,107 @@
+name: Run Performance Test mani
+
+on:
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: |
+          Scenarios for execution. 
+          Formats: "*OpenActionsSearchApiScenario, investigation.hub.perf.simulations.*"
+        default: "*"
+        required: true
+
+      vUsers:
+        description: "Concurrent users"
+        default: "50"
+
+      rampUpUsersDuring:
+        description: "Time range in seconds for injection vUsers"
+        default: "100"
+
+      maintainActiveUsersDuring:
+        description: "Time rang in minutes to maintain active users"
+        default: "2"
+
+      requestsPerUser:
+        description: "Number of sequential requests per one concurrent user"
+        default: "10"
+
+      maxPauseBetweenRequests:
+        description: "Max pause before doing sequential user requests"
+        default: "2"
+
+      env:
+        type: choice
+        description: "Performance environment"
+        options:
+          - perf
+          - perf2
+
+      jobTag:
+        type: choice
+        description: "The job type"
+        options:
+          - manual
+          - night
+          - release
+
+jobs:
+  run-tests:
+    runs-on: linux-qa
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          path: invhub-performance-aqa
+
+      - name: Prepare simulation summary
+        run: |
+          {
+            echo "### Workflow variables"
+            echo "| Variable                     | Value                                    |"
+            echo "| --------------------------   | ---------------------------------------- |"
+            echo "| SIMULATIONS                  | ${{ inputs.scenario }}                   |"
+            echo "| V_USERS_COUNT                | ${{ inputs.vUsers }}                     |"
+            echo "| RAMP_UP_V_USERS_DURING       | ${{ inputs.rampUpUsersDuring }}          |"
+            echo "| MAINTAIN_ACTIVE_USERS_DURING | ${{ inputs.maintainActiveUsersDuring }}  |"
+            echo "| REQUESTS_PER_USER            | ${{ inputs.requestsPerUser }}            |"
+            echo "| MAX_PAUSE_BETWEEN_REQUESTS   | ${{ inputs.maxPauseBetweenRequests }}    |"
+            echo "| ENV                          | ${{ inputs.env }}                        |"
+            echo "| JOB_TAG                      | ${{ inputs.jobTag }}                     |"
+          } >> $GITHUB_STEP_SUMMARY
+
+      - name: Clear performance test docker dependencies
+        working-directory: ./invhub-performance-aqa
+        run: docker-compose -f docker-compose.yml down --rmi all
+
+      - name: Run gatling test
+        working-directory: ./invhub-performance-aqa
+        run: docker-compose -f docker-compose.yml up
+        env:
+          SIMULATIONS: ${{ inputs.scenario }}
+          V_USERS_COUNT: ${{ inputs.vUsers }}
+          RAMP_UP_V_USERS_DURING: ${{ inputs.rampUpUsersDuring }}
+          MAINTAIN_ACTIVE_USERS_DURING: ${{ inputs.maintainActiveUsersDuring }}
+          REQUESTS_PER_USER: ${{ inputs.requestsPerUser }}
+          MAX_PAUSE_BETWEEN_REQUESTS: ${{ inputs.maxPauseBetweenRequests }}
+          SPRING_PROFILES_ACTIVE: ${{ inputs.env }}
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          destination_dir: ${{ inputs.jobTag }}
+          publish_dir: invhub-performance-aqa/reports
+          keep_files: true
+
+      - name: Attach links to reports
+        working-directory: ./invhub-performance-aqa/reports
+        run: |
+          {
+            echo "### Reports"
+            find * -name 'index.html' | awk '{print "https://psychic-chainsaw-73y61em.pages.github.io/${{ inputs.jobTag }}/" $0}'                    
+          } >> $GITHUB_STEP_SUMMARY
+
+      - name: Post cleaning
+        working-directory: ./invhub-performance-aqa
+        run: docker-compose -f docker-compose.yml down --rmi all
