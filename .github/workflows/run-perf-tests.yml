@@ -34,6 +34,6 @@ jobs:
           sudo apt-get install sbt -y
 
       - name: Run Gatling simulation with dynamic ramp-up
-        run: mvn gatling:test -Dgatling.BasicSimulation.scala=Simulations -DUSERS=${{ github.event.inputs.USERS }} -DDURATION=${{ github.event.inputs.DURATION }}"
+        run: mvn gatling:test -Dgatling.simulationClass=Simulations.BasicSimulation -DUSERS=${{ github.event.inputs.USERS }} -DDURATION=${{ github.event.inputs.DURATION }}
 
           #sbt "gatling:testOnly DynamicRampUpSimulation -DUSERS=${{ github.event.inputs.USERS }} -DDURATION=${{ github.event.inputs.DURATION }}"
