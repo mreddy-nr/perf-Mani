@@ -26,6 +26,9 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
+      - name: Setup SBT
+        uses: actions/setup-sbt@v2
+
       - name: Run Gatling simulation with dynamic ramp-up
         run: |
           sbt "gatling:testOnly DynamicRampUpSimulation -DUSERS=${{ github.event.inputs.USERS }} -DDURATION=${{ github.event.inputs.DURATION }}"
