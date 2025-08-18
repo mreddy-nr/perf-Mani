@@ -7,11 +7,11 @@ on:
       USERS:
         description: 'Number of ramp users'
         required: false
-        default: '10'
+        default: '1'
       DURATION:
         description: 'Ramp duration in seconds'
         required: false
-        default: '30'
+        default: '1'
 
 jobs:
   gatling-test:
@@ -26,6 +26,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+
+      - name: Build (compile) Scala code
+        run: mvn clean compile
 
       - name: Run Gatling simulation with Maven
         run: |
