@@ -37,7 +37,7 @@ jobs:
       - name: Ensure results directory exists
         run: mkdir -p target/gatling/results
       - name: Upload Gatling Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gatling-results
           path: target/gatling/results
