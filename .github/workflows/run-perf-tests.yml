@@ -1,3 +1,4 @@
+# This workflow does not require the run_tests.sh script
 name: Gatling Manual Run
 
 on:
@@ -26,14 +27,6 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      - name: Build Scala code
-        run: mvn clean compile
-
-      - name: Run Gatling simulation with dynamic ramp-up
-        run: mvn gatling:test -Dgatling.simulationClass=Simulations.BasicSimulation -DUSERS=${{ github.event.inputs.USERS }} -DDURATION=${{ github.event.inputs.DURATION }}
-
-      - name: Upload Gatling Reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: gatling-report
-          path: target/gatling/results/
+      - name: Run Gatling simulation with Maven
+        run: |
+          mvn gatling:test -Dgatling.simulationClass=Simulations.BasicSimulation -DUSERS=${{ github.event.inputs.USERS }} -DDURATION=${{ github.event.inputs.DURATION }}
