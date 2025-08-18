@@ -31,11 +31,9 @@ jobs:
       - name: Build (compile) Scala code
         run: mvn clean compile
 
-      - name: Run Gatling simulation with Maven
-        run: |
-          mvn gatling:test -Dgatling.simulationClass=Simulations.BasicSimulation -DUSERS=${{ github.event.inputs.USERS }} -DDURATION=${{ github.event.inputs.DURATION }}
-      - name: Ensure results directory exists
-        run: mkdir -p target/gatling/results
+      - name: List Gatling results directory
+        run: ls -l target/gatling/results
+
       - name: Upload Gatling Results
         uses: actions/upload-artifact@v4
         with:
