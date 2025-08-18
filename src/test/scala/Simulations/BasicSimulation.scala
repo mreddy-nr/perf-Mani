@@ -24,7 +24,7 @@ val httpProtocol = http
         .asJson
         .check(jsonPath("$.accessToken").saveAs("bearerToken"))
     )
-    // 2. Print the extracted bearerToken
+    // 2. Print the extracted bearerToken for users//
     .exec { session =>
       println("Extracted bearerToken: " + session("bearerToken").asOption[String].getOrElse("NOT FOUND"))
       session
