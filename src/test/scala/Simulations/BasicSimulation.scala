@@ -12,7 +12,7 @@ val httpProtocol = http
     // 1. Send a POST request, save 'accessToken' as 'bearerToken'
     .exec(
       http("Post with JSON body")
-        .post("v1/auth/apiLogin")
+        .post("/v1/auth/apiLogin")
         .header("Content-Type", "application/json")
         .body(StringBody(
           """
