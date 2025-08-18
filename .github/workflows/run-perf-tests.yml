@@ -19,17 +19,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          path: perf-Mani  # Fetch all history for accurate blame and history  
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
-
-      - name: Setup SBT
-        uses: actions/setup-sbt@v2
 
       - name: Run Gatling simulation with dynamic ramp-up
         run: |
