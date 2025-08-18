@@ -4,9 +4,10 @@ import io.gatling.http.Predef._
 import scala.concurrent.duration._
 
 class BasicSimulation extends Simulation {
+val users: Int = Integer.getInteger("USERS", 1)
+val duration: Int = Integer.getInteger("DURATION", 1)
 val httpProtocol = http
     .baseUrl("https://perf.invhub.fseng.net")
-
   val scn = scenario("Save and View Response Data")
     // 1. Send a POST request, save 'accessToken' as 'bearerToken'
     .exec(
@@ -31,6 +32,8 @@ val httpProtocol = http
     }
 
   setUp(
-    rampUsers(users) during (duration.seconds)
+    scn.inject(
+      rampUsers(users) during (duration.seconds)
+    )
   ).protocols(httpProtocol)
 }
