@@ -33,7 +33,7 @@ jobs:
         run: mvn gatling:test -Dgatling.simulationClass=Simulations.BasicSimulation -DUSERS=${{ github.event.inputs.USERS }} -DDURATION=${{ github.event.inputs.DURATION }}
 
       - name: Upload Gatling Reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gatling-report
           path: target/gatling/results/
