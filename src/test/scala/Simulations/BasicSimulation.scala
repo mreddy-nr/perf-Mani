@@ -31,6 +31,6 @@ val httpProtocol = http
     }
 
   setUp(
-    scn.inject(atOnceUsers(1))
+    rampUsers(users) during (duration.seconds)
   ).protocols(httpProtocol)
 }

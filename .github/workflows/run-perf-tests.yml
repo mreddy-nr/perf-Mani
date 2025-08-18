@@ -1,107 +1,31 @@
-name: Run Performance Test mani
+name: Gatling Manual Run
 
 on:
   workflow_dispatch:
     inputs:
-      scenario:
-        description: |
-          Scenarios for execution. 
-          Formats: "*OpenActionsSearchApiScenario, investigation.hub.perf.simulations.*"
-        default: "*"
-        required: true
-
-      vUsers:
-        description: "Concurrent users"
-        default: "50"
-
-      rampUpUsersDuring:
-        description: "Time range in seconds for injection vUsers"
-        default: "100"
-
-      maintainActiveUsersDuring:
-        description: "Time rang in minutes to maintain active users"
-        default: "2"
-
-      requestsPerUser:
-        description: "Number of sequential requests per one concurrent user"
-        default: "10"
-
-      maxPauseBetweenRequests:
-        description: "Max pause before doing sequential user requests"
-        default: "2"
-
-      env:
-        type: choice
-        description: "Performance environment"
-        options:
-          - perf
-          - perf2
-
-      jobTag:
-        type: choice
-        description: "The job type"
-        options:
-          - manual
-          - night
-          - release
+      USERS:
+        description: 'Number of ramp users'
+        required: false
+        default: '10'
+      DURATION:
+        description: 'Ramp duration in seconds'
+        required: false
+        default: '30'
 
 jobs:
-  run-tests:
-    runs-on: linux-qa
+  gatling-test:
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout source
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
-          path: invhub-performance-aqa
+          distribution: 'temurin'
+          java-version: '11'
 
-      - name: Prepare simulation summary
+      - name: Run Gatling simulation with dynamic ramp-up
         run: |
-          {
-            echo "### Workflow variables"
-            echo "| Variable                     | Value                                    |"
-            echo "| --------------------------   | ---------------------------------------- |"
-            echo "| SIMULATIONS                  | ${{ inputs.scenario }}                   |"
-            echo "| V_USERS_COUNT                | ${{ inputs.vUsers }}                     |"
-            echo "| RAMP_UP_V_USERS_DURING       | ${{ inputs.rampUpUsersDuring }}          |"
-            echo "| MAINTAIN_ACTIVE_USERS_DURING | ${{ inputs.maintainActiveUsersDuring }}  |"
-            echo "| REQUESTS_PER_USER            | ${{ inputs.requestsPerUser }}            |"
-            echo "| MAX_PAUSE_BETWEEN_REQUESTS   | ${{ inputs.maxPauseBetweenRequests }}    |"
-            echo "| ENV                          | ${{ inputs.env }}                        |"
-            echo "| JOB_TAG                      | ${{ inputs.jobTag }}                     |"
-          } >> $GITHUB_STEP_SUMMARY
-
-      - name: Clear performance test docker dependencies
-        working-directory: ./invhub-performance-aqa
-        run: docker-compose -f docker-compose.yml down --rmi all
-
-      - name: Run gatling test
-        working-directory: ./invhub-performance-aqa
-        run: docker-compose -f docker-compose.yml up
-        env:
-          SIMULATIONS: ${{ inputs.scenario }}
-          V_USERS_COUNT: ${{ inputs.vUsers }}
-          RAMP_UP_V_USERS_DURING: ${{ inputs.rampUpUsersDuring }}
-          MAINTAIN_ACTIVE_USERS_DURING: ${{ inputs.maintainActiveUsersDuring }}
-          REQUESTS_PER_USER: ${{ inputs.requestsPerUser }}
-          MAX_PAUSE_BETWEEN_REQUESTS: ${{ inputs.maxPauseBetweenRequests }}
-          SPRING_PROFILES_ACTIVE: ${{ inputs.env }}
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          destination_dir: ${{ inputs.jobTag }}
-          publish_dir: invhub-performance-aqa/reports
-          keep_files: true
-
-      - name: Attach links to reports
-        working-directory: ./invhub-performance-aqa/reports
-        run: |
-          {
-            echo "### Reports"
-            find * -name 'index.html' | awk '{print "https://psychic-chainsaw-73y61em.pages.github.io/${{ inputs.jobTag }}/" $0}'                    
-          } >> $GITHUB_STEP_SUMMARY
-
-      - name: Post cleaning
-        working-directory: ./invhub-performance-aqa
-        run: docker-compose -f docker-compose.yml down --rmi all
+          sbt "gatling:testOnly DynamicRampUpSimulation -DUSERS=${{ github.event.inputs.USERS }} -DDURATION=${{ github.event.inputs.DURATION }}"
