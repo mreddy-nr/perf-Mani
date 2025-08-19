@@ -1,3 +1,28 @@
+error id: file:///C:/Users/ManikantaSanambatla/Downloads/gatling-maven-plugin-demo-main/gatling-maven-plugin-demo-main/src/test/scala/Simulations/BasicSimulation.scala:`<none>`.
+file:///C:/Users/ManikantaSanambatla/Downloads/gatling-maven-plugin-demo-main/gatling-maven-plugin-demo-main/src/test/scala/Simulations/BasicSimulation.scala
+empty definition using pc, found symbol in pc: `<none>`.
+empty definition using semanticdb
+empty definition using fallback
+non-local guesses:
+	 -io/gatling/core/Predef.GetNextApi.
+	 -io/gatling/core/Predef.GetNextApi#
+	 -io/gatling/core/Predef.GetNextApi().
+	 -io/gatling/http/Predef.GetNextApi.
+	 -io/gatling/http/Predef.GetNextApi#
+	 -io/gatling/http/Predef.GetNextApi().
+	 -scala/concurrent/duration/GetNextApi.
+	 -scala/concurrent/duration/GetNextApi#
+	 -scala/concurrent/duration/GetNextApi().
+	 -GetNextApi.
+	 -GetNextApi#
+	 -GetNextApi().
+	 -scala/Predef.GetNextApi.
+	 -scala/Predef.GetNextApi#
+	 -scala/Predef.GetNextApi().
+offset: 1711
+uri: file:///C:/Users/ManikantaSanambatla/Downloads/gatling-maven-plugin-demo-main/gatling-maven-plugin-demo-main/src/test/scala/Simulations/BasicSimulation.scala
+text:
+```scala
 package Simulations
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
@@ -36,22 +61,26 @@ val httpProtocol = http
       http("Get Next API")
         .get("/v1/queues/next")
         .header("Authorization", "Bearer ${bearerToken}")
-        .check(
-          status.is(200),
-          bodyString.saveAs("apiResponseBody"))
+        .check(status.is(200))
     )
     // 4. Print the response status for the next API
     .exec { session =>
-      println("API Response Body: " + session("apiResponseBody").as[String])
+      println("Response status for next API: " + session("responseStatus").asOption[Int].getOrElse("NOT FOUND"))
       session   
     }
   val scn=scenario("Basic Simulation")
     .exec(LoginRequest)
     .pause(1.second) // Pause for 1 second before the next request
-    .exec(GetNextApi)
+    .exec(GetNextApi@@)
   setUp(
     scn.inject(
       rampUsers(users) during (duration.seconds)
     )
   ).protocols(httpProtocol)
 }
+```
+
+
+#### Short summary: 
+
+empty definition using pc, found symbol in pc: `<none>`.
