@@ -38,5 +38,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gatling-results
-          path: target/gatling/results
+          path: target/gatling
     
