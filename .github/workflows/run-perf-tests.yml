@@ -27,7 +27,8 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
-
+      - name: run Gatling tests
+        run: mvn gatling:test -Dgatling.simulationClass=Simulations.BasicSimulation -DUSERS=${{ github.event.inputs.USERS }} -DDURATION=${{ github.event.inputs.DURATION }} 
       - name: Build (compile) Scala code
         run: mvn clean compile
 
