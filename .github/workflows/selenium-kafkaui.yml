@@ -20,6 +20,9 @@ jobs:
       - name: Install dependencies
         run: |
           pip install selenium webdriver-manager
+      - name: Install dependencies
+        run: |
+          pip install selenium webdriver-manager psycopg2-binary    
 
       - name: Install Google Chrome
         uses: browser-actions/setup-chrome@v1
