@@ -149,12 +149,18 @@ def clean_data_oracle(driver, wait):
     time.sleep(2)
 def main():
     options = Options()
-    options.add_argument("--headless=new")  # Use new headless mode if possible (Chrome >=109)
+    options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    # Use a unique user data directory per run
-    chrome_tmp = tempfile.mkdtemp()
-    options.add_argument(f"--user-data-dir={chrome_tmp}")
+    user_data_dir = tempfile.mkdtemp()
+    options.add_argument(f"--user-data-dir={user_data_dir}")
+    
+    driver = webdriver.Chrome(
+        service=Service(ChromeDriverManager().install()),
+        options=options
+    )
+    print("Chrome started successfully!")
+    driver.quit()
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     driver.maximize_window()
     wait = WebDriverWait(driver, 20)
