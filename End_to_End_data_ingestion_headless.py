@@ -149,10 +149,13 @@ def clean_data_oracle(driver, wait):
     time.sleep(2)
 def main():
     options = Options()
-    options.add_argument("--headless=new")
+    options.add_argument("--headless=new")  # Or "--headless" if error persists
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    chrome_tmp = tempfile.mkdtemp()
+    options.add_argument(f"--user-data-dir={chrome_tmp}")
+
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     driver.maximize_window()
     wait = WebDriverWait(driver, 20)
     try:
