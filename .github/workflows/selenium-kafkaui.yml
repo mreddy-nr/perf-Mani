@@ -28,7 +28,7 @@ jobs:
         uses: browser-actions/setup-chrome@v1
 
       - name: Run Selenium script
-        run: python database_automation.py
+        run: End_to_End_data_ingestion_headless.py
         env:
           USERNAME: "Admin"
           PASSWORD: "rFt9f7YcvzZlI7kL"
