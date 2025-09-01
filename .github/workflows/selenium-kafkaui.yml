@@ -1,9 +1,9 @@
 name: Selenium Automation
 
 on:
-  workflow_dispatch: # Manual trigger
+  workflow_dispatch:
   schedule:
-    - cron: '0 7 * * *' # Runs at 7:00 UTC every day (optional)
+    - cron: '0 7 * * *'
 
 jobs:
   selenium:
@@ -15,20 +15,17 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10' # Or your preferred version
+          python-version: '3.10'
 
       - name: Install dependencies
         run: |
-          pip install selenium webdriver-manager
-      - name: Install dependencies
-        run: |
-          pip install selenium webdriver-manager psycopg2-binary    
+          pip install selenium webdriver-manager psycopg2-binary
 
       - name: Install Google Chrome
         uses: browser-actions/setup-chrome@v1
 
       - name: Run Selenium script
-        run: End_to_End_data_ingestion_headless.py
+        run: python End_to_End_data_ingestion_headless.py
         env:
           USERNAME: "Admin"
           PASSWORD: "rFt9f7YcvzZlI7kL"
