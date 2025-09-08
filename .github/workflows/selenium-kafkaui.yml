@@ -3,7 +3,7 @@ name: Selenium Automation
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 7 * * *'
+    manual
 
 jobs:
   selenium:
